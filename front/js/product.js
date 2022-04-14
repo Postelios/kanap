@@ -85,7 +85,7 @@ function basket() {
         console.log(basket);
         let price = document.getElementById("price");
         price.innerText = Math.floor(Math.random() * 9000);
-        localStorage.setItem('panier', 'basket');
+        localStorage.setItem('panier', JSON.stringify(basket));
 
 
     })
