@@ -24,11 +24,11 @@ exports.getOneProduct = (req, res, next) => {
         return res.status(404).send(new Error('Product not found!'));
       }
       product.imageUrl = req.protocol + '://' + req.get('host') + '/images/' + product.imageUrl;
-      res.status(200).json(product);
+      res.status(500).send(new Error('Database error!'));
     }
   ).catch(
     () => {
-      res.status(500).send(new Error('Database error!'));
+      res.status(500).json(product);
     }
   )
 };
