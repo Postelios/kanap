@@ -74,8 +74,8 @@ set_html();
 function get_Price() {
     let local_storage = get_local_storage();
     let id = local_storage.id;
-    for (let i = 0; i < local_storage.id.lenght; i++) {
-        fetch(`http://localhost:3000/api/products/${id}`)
+    for (let i = 0; i < local_storage.lenght; i++) {
+        fetch(`http://localhost:3000/api/products/${local_storage[i].id}`)
             .then((response) => {
                 if (response.status == 404) {
                     console.log('404');
@@ -92,10 +92,11 @@ function get_Price() {
     }
 }
 
-function get_client(){
-    const firstName = document.getElementById("firstName").value;
-    const lastName = document.getElementById("firstName").value;
-    const address = document.getElementById("address").value;
-    const city = document.getElementById("city");
-    const email = document.getElementById("email");
+function get_contact(){
+    const first_Name = document.getElementById("firstName").value;
+    const last_Name = document.getElementById("lastName").value;
+    const form_address = document.getElementById("address").value;
+    const form_city = document.getElementById("city").value;
+    const form_email = document.getElementById("email").value;
+    let contact = {firstName: first_Name, last_Name}
 }
