@@ -30,7 +30,7 @@ function display_html(data){
     let html = "";
     for (let i = 0; i < len; i++) {
         //console.log(data.colors[i]);
-        html += `<option value= ${data.colors[i]} > ${data.colors[i]} </option>`;
+        html += `<option value = ${data.colors[i]} > ${data.colors[i]} </option>`;
     };
     colors.innerHTML += html;
 
@@ -107,21 +107,25 @@ function basket() {
         //2-verifier que lid du produit n'existe pas
         //2bis-Si il existe aug la quantité
         //3-save la variable dans le local
-        if (color == "" || quantity > 100 || quantity < 1){
-            alert("vous devez choisir une couleur et une quantité pour le produit choisi.");
+        if (color.value == "" ){
+            alert("vous devez choisir une couleur pour le produit choisi.");
+        }
+        else if ( quantity.value > 100){
+            alert("vous devez choisir une quantité inférieure a 100.");
+        }
+        else if (quantity.value < 1){
+            alert("vous devez choisir une quantité pour le produit chosi.");
         }
         else{
             let basket = [];
         basket.push ({ id: GetId(), quantity: quantity.value, color: color.value});
         //console.log(basket);
-        let test = (element) => element.id == id;
+        let check_ls = (element) => element.id == id;
+        let z = local_storage.findIndex(check_ls);
+        console.log(z);
         let y = check_basket(local_storage, basket);
-        console.log(local_storage.findIndex(test));
-
         console.log(y);
-
         localStorage.setItem("panier", JSON.stringify(basket));
-      
         };
     })
 }
