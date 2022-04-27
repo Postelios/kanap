@@ -2,12 +2,14 @@
 // pour pouvoir afficher le panier
 function get_local_storage() {
     let local_storage = JSON.parse(localStorage.getItem("panier"));
-    let id = GetId();
+   // let id = GetId();
     return (local_storage);
 }
 
 //préparer le html qui va construire le panier
-function set_html() {
+function display_html(data) {
+    let local_storage = get_local_storage();
+    let price = data.price * local_storage[0].quantity;
     const cart_item = document.getElementById('cart__items');
     const article = document.createElement('article');
     const item_img = document.createElement('div');
@@ -27,15 +29,16 @@ function set_html() {
     settings_quantity.classList.add('cart__item__content__settings__quantity');
     settings_delete.classList.add('cart__item__content__settings__delete');
     
-    item_img.innerHTML = 'a';//`<img src="${data.imageUrl}" alt="${data.altTxt}">`;
-    content_description.innerHTML = 'b'; //  `<h2>${data.name}</h2><p>${data.color}</p><p>${data.color}</p>`;
+    console.log(data.name);
+    item_img.innerHTML = `<img src="${data.imageUrl}" alt="${data.altTxt}">`;
+    content_description.innerHTML = `<h2>${data.name}</h2><p>${local_storage[0].color}</p><p>${price}</p>`;
 
+console.log(local_storage[0].quantity);
+    settings_quantity.innerHTML = `<p>Qté : ${local_storage[0].quantity}</p> 
+    <input type="number" class="itemQuantity" 
+    name="${data.name}" min="1" max="100" value="${local_storage[0].quantity}">`;
 
-    settings_quantity.innerHTML = 'a'; // `<p>Qté : ${local_storage.quantity}</p>
-    //<input type="number" class="itemQuantity" 
-    //name="${data.name}" min="1" max="100" value="${local_storage.quantity}"`>;
-
-    settings_delete.innerHTML = 'a'; //`<p class="deleteItem">Supprimer</p>`;
+    settings_delete.innerHTML = `<p class="deleteItem">Supprimer</p>`;
   
     cart_item.appendChild(article);
         article.appendChild(item_img);
@@ -68,20 +71,26 @@ function set_html() {
   </article>*/
 }
 
-set_html();
 
 
 function get_Price() {
     let local_storage = get_local_storage();
     let id = local_storage.id;
-    for (let i = 0; i < local_storage.lenght; i++) {
-        fetch(`http://localhost:3000/api/products/${local_storage[i].id}`)
+    console.log(local_storage);
+    console.log(local_storage[0].id);
+    console.log(local_storage.length);
+    for (let i = 0; i < local_storage.length; i++) {
+        console.log(i);
+        fetch(`http://localhost:3000/api/products/${local_storage[0].id}`)
             .then((response) => {
+                console.log('then');
                 if (response.status == 404) {
                     console.log('404');
                 } else if (response.ok) {
                     response.json().then((data) => {
                         display_html(data);
+                        console.log('in');
+                        console.log(data);
                     })
                 }
 
@@ -98,5 +107,9 @@ function get_contact(){
     const form_address = document.getElementById("address").value;
     const form_city = document.getElementById("city").value;
     const form_email = document.getElementById("email").value;
-    let contact = {firstName: first_Name, last_Name}
+    let contact = {firstName: first_Name, lastname:last_Name, address: form_address, email: form_email};
+    console.log(contact);
+    return(contact);
 }
+get_contact();
+get_Price();

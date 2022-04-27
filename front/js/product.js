@@ -29,11 +29,9 @@ function display_html(data){
     const len = data.colors.length;
     let html = "";
     for (let i = 0; i < len; i++) {
-        //console.log(data.colors[i]);
         html += `<option value = ${data.colors[i]} > ${data.colors[i]} </option>`;
     };
     colors.innerHTML += html;
-
 }
 
 function getProduct() {
@@ -48,7 +46,7 @@ function getProduct() {
 
             } else if (response.ok) {
                 response.json().then((data) => {
-          //          console.log(data);
+                    console.log(data);
             //        console.log(response);
                     display_html(data);
                 })
@@ -56,7 +54,7 @@ function getProduct() {
 
         })
         .catch(function (err) {
-            // some error here
+            console.log(err);
         });
 }
 
@@ -75,10 +73,10 @@ function get_local_storage(){
 return (local_storage);
 }
 
-function check_basket(local_storage, basket) {
+function check_basket(local_storage, add_cart) {
     let y = 0;//debugger;
     while (y < local_storage.length){
-            if (local_storage[y].id == basket[0].id){
+            if (local_storage[y].id == add_cart[0].id){
                 return (y);
             }
         y++;
@@ -86,7 +84,7 @@ function check_basket(local_storage, basket) {
     return (-1);
 }
 
-function basket() {
+function add_cart() {
 
     const add = document.getElementById("addToCart");
     const quantity = document.getElementById("quantity");
@@ -117,18 +115,20 @@ function basket() {
             alert("vous devez choisir une quantité pour le produit chosi.");
         }
         else{
-            let basket = [];
-        basket.push ({ id: GetId(), quantity: quantity.value, color: color.value});
-        //console.log(basket);
+            let add_cart = [];
+        add_cart.push ({ id: GetId(), quantity: quantity.value, color: color.value});
+        //console.log(add_cart);
         let check_ls = (element) => element.id == id;
         let z = local_storage.findIndex(check_ls);
         console.log(z);
-        let y = check_basket(local_storage, basket);
+        let y = check_basket(local_storage, add_cart);
         console.log(y);
-        localStorage.setItem("panier", JSON.stringify(basket));
+
+        localStorage.setItem("panier", JSON.stringify(add_cart));
+        return (add_cart);
         };
     })
 }
 getProduct();
 get_local_storage();
-basket();
+add_cart();
