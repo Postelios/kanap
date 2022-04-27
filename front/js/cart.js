@@ -5,9 +5,9 @@ function get_local_storage() {
    // let id = GetId();
     return (local_storage);
 }
-
 //préparer le html qui va construire le panier
 function display_html(data) {
+
     let local_storage = get_local_storage();
     let price = data.price * local_storage[0].quantity;
     const cart_item = document.getElementById('cart__items');
