@@ -61,27 +61,31 @@ function getProduct() {
 
 function get_local_storage(){
     let local_storage = (localStorage.getItem("panier"));
-    let id = GetId();
     local_storage = JSON.parse(local_storage);
-
    // console.log("la taille du local storage est:"+local_storage.length);
     //console.log("le contenu du local storage est:"+local_storage[1].color);
     //console.log("le contenu du local storage est:"+local_storage[0].id[0]);
-    console.log(local_storage);
-
     //console.log(local_storage.color);
 return (local_storage);
 }
 
-function check_basket(local_storage, add_cart) {
+function check_color(local_storage, add_cart) {
     let y = 0;//debugger;
+    console.log(typeof local_storage[y].quantity);
+    console.log(typeof add_cart[0].quantity);
     while (y < local_storage.length){
-            if (local_storage[y].id == add_cart[0].id){
-                return (y);
+            if (local_storage[y].id == add_cart[0].id && local_storage[y].color == add_cart[0].color ){
+                const ls = parseInt(local_storage[y].quantity);
+                if(ls + parseInt(add_cart[0].quantity) > 100)
+                local_storage[y].quantity = 100;
+                else
+                local_storage[y].quantity = ls + parseInt(add_cart[0].quantity)
+
+                return 0;
             }
         y++;
     }
-    return (-1);
+    return undefined;
 }
 
 function add_cart() {
@@ -90,7 +94,7 @@ function add_cart() {
     const quantity = document.getElementById("quantity");
     const color = document.getElementById("colors");
     const id = GetId();
-    const local_storage = get_local_storage();
+    let local_storage = get_local_storage();
    // JSON.parse(local_storage);
    // let basket = [{ id: GetId(), quantity: quantity.value, color: color.value}];
 
@@ -117,14 +121,18 @@ function add_cart() {
         else{
             let add_cart = [];
         add_cart.push ({ id: GetId(), quantity: quantity.value, color: color.value});
-        //console.log(add_cart);
+        console.log(add_cart);
         let check_ls = (element) => element.id == id;
-        let z = local_storage.findIndex(check_ls);
-        console.log(z);
-        let y = check_basket(local_storage, add_cart);
-        console.log(y);
-
-        localStorage.setItem("panier", JSON.stringify(add_cart));
+       if(local_storage == null){
+        local_storage = add_cart;
+       }
+       else{
+        let y = (local_storage.findIndex(check_ls));
+        let c = check_color(local_storage,add_cart);
+            if (y == -1 || c == undefined)
+            local_storage.push(add_cart[0]);
+           }
+        localStorage.setItem("panier", JSON.stringify(local_storage));
         return (add_cart);
         };
     })
