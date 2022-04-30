@@ -98,15 +98,20 @@ function get_contact(){
     return(contact);
 }
 
+function param_order(){
+  let contact = get_contact();
+  let products = get_all_id();
+  let order = {contact, products};
+  return order;
+}
+
 function post(){
+  let order = param_order();
     fetch("http://localhost:3000/api/products/order", {
     // Adding method type
     method: "POST",
     // Adding body or contents to send
-    body: JSON.stringify({
-               
-    }),
-     
+    body: JSON.stringify(order),
     // Adding headers to the request
     headers: {
         "Content-type": "application/json; charset=UTF-8"
