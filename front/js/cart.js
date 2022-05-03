@@ -10,10 +10,12 @@ function supprimer(){
   let local_storage = get_local_storage();
   const del = document.getElementsByClassName('deleteItem');
   const item = document.getElementsByTagName('article');
+  const items = document.getElementById('cart__items');
   for (let i = 0; i < del.length; i++){
   //console.log(del[i]);
   del[i].addEventListener('click', function () {
-    let product = {id:item[i].dataset.id , color:item[i].dataset.color};
+    let this_item = item[i]
+    let product = {id:this_item.dataset.id , color:this_item.dataset.color};
     console.log(product);
     let check_ls = (element) => element.id == product.id && element.color == product.color;
     let y = local_storage.findIndex(check_ls)
@@ -24,7 +26,9 @@ function supprimer(){
     }
     else
     localStorage.setItem("panier", JSON.stringify(local_storage));
-    location.reload()  
+    console.log(this_item);
+    //location.reload()  
+    this_item.remove();
 
   });}
 }
@@ -128,6 +132,25 @@ function get_Price() {
                 // some error here
             })
     }
+}
+function verif(s){
+  for (let i = 0; i < s.length; i++){
+    if (s[i] != [A-Za-z])
+    return (nas);
+  }
+  for (let i = 0; i < s.length; i++){
+    if (s[i] == @)
+    return (email);
+  }
+  return 0;
+}
+
+function set_errorHTML(){
+  const first_name = document.getElementById();
+  const last_name = document.getElementById();
+  const address = document.getElementById();
+  const email = document.getElementById();
+  
 }
 
 function get_contact(){
