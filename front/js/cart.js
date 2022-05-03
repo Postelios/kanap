@@ -5,6 +5,45 @@ function get_local_storage() {
    // let id = GetId();
     return (local_storage);
 }
+
+function supprimer(){
+  let local_storage = get_local_storage();
+  const del = document.getElementsByClassName('deleteItem');
+  const item = document.getElementsByTagName('article');
+  for (let i = 0; i < del.length; i++){
+  //console.log(del[i]);
+  del[i].addEventListener('click', function () {
+    let product = {id:item[i].dataset.id , color:item[i].dataset.color};
+    console.log(product);
+    let check_ls = (element) => element.id == product.id && element.color == product.color;
+    let y = local_storage.findIndex(check_ls)
+    console.log(y);
+    local_storage.splice(y,1);
+    if (local_storage.length == 0){
+      localStorage.removeItem("panier");
+    }
+    else
+    localStorage.setItem("panier", JSON.stringify(local_storage));
+    location.reload()  
+
+  });}
+}
+
+function input_change(data){
+  const quantity = document.getElementsByClassName("itemQuantity");
+  let local_storage = get_local_storage();
+  const item = document.getElementsByTagName('article');
+  for (let i = 0; i < quantity.length; i++){
+  quantity[i].addEventListener('change', function(){
+    let price = data.price*quantity.value;
+    let product = {id:item[i].dataset.id , color:item[i].dataset.color};
+    let check_ls = (element) => element.id == product.id && element.color == product.color;
+    let y = local_storage.findIndex(check_ls)
+    local_storage[y].quantity = quantity[i].value;
+    localStorage.setItem("panier", JSON.stringify(local_storage));
+console.log("on est la");
+  });
+}}
 //préparer le html qui va construire le panier
 function display_html(data,local_storage) {
 
@@ -19,8 +58,8 @@ function display_html(data,local_storage) {
     const settings_delete = document.createElement('div');
     
     article.classList.add('cart__item');
-    article.setAttribute('data-id', '{product-ID}');
-    article.setAttribute('data-color', '{product-color}');
+    article.dataset.id = local_storage.id;
+    article.dataset.color = local_storage.color;
     item_img.classList.add('cart__item__img');
     item_content.classList.add('cart__item__content');
     content_description.classList.add('item__content__description');
@@ -30,7 +69,7 @@ function display_html(data,local_storage) {
     
     console.log(data.name);
     item_img.innerHTML = `<img src="${data.imageUrl}" alt="${data.altTxt}">`;
-    content_description.innerHTML = `<h2>${data.name}</h2><p>${local_storage.color}</p><p>${price}</p>`;
+    content_description.innerHTML = `<h2>${data.name}</h2><p>${local_storage.color}</p><p>${price} €</p>`;
 
     settings_quantity.innerHTML = `<p>Qté : </p> <input type="number" class="itemQuantity" 
     name="${data.name}" min="1" max="100" value="${local_storage.quantity}">`;
@@ -44,12 +83,13 @@ function display_html(data,local_storage) {
             item_content.appendChild(content_settings);
             content_settings.appendChild(settings_quantity);
             content_settings.appendChild(settings_delete);
+input_change(data);
 }
 
 function total(len,price){
   let total_Quantity = document.getElementById('totalQuantity'); 
   if (len == 1){
-    let html = `<p>Total (<span id="totalQuantity">${len}</span> article) : 
+    let html = `<p>Total (<span id = "totalQuantity">${len}</span> article) : 
     <span id="totalPrice"><!-- 84,00 --></span> €</p>`
     let insert = document.getElementsByClassName('cart__price');
     insert[0].innerHTML = html;
@@ -65,6 +105,7 @@ function get_Price() {
     let id = local_storage.id;
     let price = 0;
     let len = local_storage.length;
+    for (let i = 0; i < local_storage.length; i++){console.log(local_storage[i].id)};
     for (let i = 0; i < local_storage.length; i++){
         fetch(`http://localhost:3000/api/products/${local_storage[i].id}`)
             .then((response) => {
@@ -73,10 +114,12 @@ function get_Price() {
                 } else if (response.ok) {
                     response.json().then((data) => {
                       price += data.price;
+                      console.log(local_storage[i].id);
                       console.log(price);
                       console.log(local_storage.length);
                         total(len,price);
                         display_html(data,local_storage[i],len,price);
+                        supprimer();
                     })
                 }
 
@@ -125,3 +168,4 @@ function post(){
 
 get_contact();
 get_Price();
+console.log(get_local_storage());
