@@ -19,9 +19,9 @@ function getall() {
 }
 
 function setHtml(element) {
-    let html = "<a href='./product.html?id=" + element._id + "'>"
-    + "<article> <img src='" + element.imageUrl + "' alt='" + element.altTxt + "'><h3 class='productName'>" + element.name + "</h3><p class='productDescription'>" + element.description + "</p></article></a>"
-    // let div = document.createElement('div'+element._id);
+    let html = `<a href='./product.html?id=${element._id}'>
+    <article> <img src='${element.imageUrl}' alt='${element.altTxt}'><h3 class='productName'>${element.name}</h3><p class='productDescription'>${element.description}</p></article></a>`
+     // let div = document.createElement('div'+element._id);
     // div.innerHTML = html;
     // a.appendChild(div) 
     return html;

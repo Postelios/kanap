@@ -9,13 +9,18 @@ function get_local_storage() {
 function supprimer(){
   let local_storage = get_local_storage();
   const del = document.getElementsByClassName('deleteItem');
-  const item = document.getElementsByTagName('article');
-  const items = document.getElementById('cart__items');
+  const cart_items = document.getElementById('cart__items');
+  console.log("benji"+ del.length);
   for (let i = 0; i < del.length; i++){
   //console.log(del[i]);
-  del[i].addEventListener('click', function () {
-    let this_item = item[i]
-    let product = {id:this_item.dataset.id , color:this_item.dataset.color};
+  del[i].addEventListener('click', function (element) {
+  const items = document.getElementsByTagName('article');
+
+    console.log(element);
+    let this_item = element.srcElement;
+    let article = this_item.parentNode.parentNode.parentNode.parentNode;
+    console.log(article);
+    let product = {id:article.dataset.id , color:article.dataset.color};
     console.log(product);
     let check_ls = (element) => element.id == product.id && element.color == product.color;
     let y = local_storage.findIndex(check_ls)
@@ -26,10 +31,10 @@ function supprimer(){
     }
     else
     localStorage.setItem("panier", JSON.stringify(local_storage));
-    console.log(this_item);
+    console.log(items);
+    console.log("benji est la");
     //location.reload()  
-    this_item.remove();
-
+    cart_items.removeChild(article);
   });}
 }
 
@@ -45,7 +50,7 @@ function input_change(data){
     let y = local_storage.findIndex(check_ls)
     local_storage[y].quantity = quantity[i].value;
     localStorage.setItem("panier", JSON.stringify(local_storage));
-console.log("on est la");
+//console.log("on est la");
   });
 }}
 //préparer le html qui va construire le panier
@@ -103,76 +108,85 @@ function total(len,price){
   total_Price.innerText = price;
 }
 
+var f = function(){console.log('toto')};
 
-function get_Price() {
+async function get_Price() {
     let local_storage = get_local_storage();
     let id = local_storage.id;
     let price = 0;
     let len = local_storage.length;
     for (let i = 0; i < local_storage.length; i++){console.log(local_storage[i].id)};
     for (let i = 0; i < local_storage.length; i++){
-        fetch(`http://localhost:3000/api/products/${local_storage[i].id}`)
-            .then((response) => {
+      try{  
+      var response = await fetch(`http://localhost:3000/api/products/${local_storage[i].id}`);
+
+        //    .then((response) => {
                 if (response.status == 404) {
                     console.log('404');
                 } else if (response.ok) {
-                    response.json().then((data) => {
+                    var data = await response.json()//.then((data) => {
                       price += data.price;
                       console.log(local_storage[i].id);
                       console.log(price);
                       console.log(local_storage.length);
                         total(len,price);
                         display_html(data,local_storage[i],len,price);
-                        supprimer();
-                    })
+                    //})
                 }
 
-            })
-            .catch(function (err) {
+              }
+            catch (err) {
+              console.error(err)
                 // some error here
-            })
+            }
     }
 }
 function verif(s){
   for (let i = 0; i < s.length; i++){
-    if (s[i] != [A-Za-z])
+    if (s[i] != [])
     return (nas);
   }
   for (let i = 0; i < s.length; i++){
-    if (s[i] == @)
+    if (s[i] == '@')
     return (email);
   }
   return 0;
 }
 
 function set_errorHTML(){
-  const first_name = document.getElementById();
-  const last_name = document.getElementById();
-  const address = document.getElementById();
-  const email = document.getElementById();
-  
+  const first_name = document.getElementById('firstName');
+  const last_name = document.getElementById('lastName');
+  const address = document.getElementById('address');
+  const email = document.getElementById('email');
+  const city = document.getElementById('city');
+  const regex = /[A-Z]/;
+  first_name.addEventListener('change', function(){
+    if (first_name.value.match(regex)){
+    console.log("okregex");
+ };})
 }
 
 function get_contact(){
-    const first_Name = document.getElementById("firstName").value;
-    const last_Name = document.getElementById("lastName").value;
-    const form_address = document.getElementById("address").value;
-    const form_city = document.getElementById("city").value;
-    const form_email = document.getElementById("email").value;
-    let contact = {firstName: first_Name, lastname:last_Name, address: form_address, email: form_email};
+    const first_Name = "mathieu"; // document.getElementById("firstName").value;
+    const last_Name = "daguenet"; //document.getElementById("lastName").value;
+    const form_address ="blabla"; //document.getElementById("address").value;
+    const form_city = "Paris";//document.getElementById("city").value;
+    const form_email = "mathieu.daguenet@gmail.com";//document.getElementById("email").value;
+    let contact = {firstName: first_Name, lastName: last_Name, address: form_address, city: form_city, email: form_email};
     console.log(contact);
     return(contact);
 }
 
 function param_order(){
-  let contact = get_contact();
-  let products = get_all_id();
-  let order = {contact, products};
+  let contact_var = get_contact();
+  let products_var = ["a557292fe5814ea2b15c6ef4bd73ed83"];//get_all_id();
+  let order = {contact:contact_var, products:products_var};
   return order;
 }
 
 function post(){
   let order = param_order();
+  console.log(JSON.stringify(order));
     fetch("http://localhost:3000/api/products/order", {
     // Adding method type
     method: "POST",
@@ -189,6 +203,12 @@ function post(){
 .then(json => console.log(json));
 }
 
-get_contact();
-get_Price();
-console.log(get_local_storage());
+async function main(){
+  get_contact();
+  await get_Price();
+  supprimer();
+  set_errorHTML();
+  post();
+}
+main();
+//Promise.all()
