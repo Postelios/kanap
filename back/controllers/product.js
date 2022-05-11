@@ -45,6 +45,7 @@ exports.getOneProduct = (req, res, next) => {
  * }
  * products: [string] <-- array of product _id
  *
+ * {"contact":{"firstName":"mathieu","lastName":"daguenet","address":"blabla","city":"Paris","email":"mathieu.daguenet@gmail.com"},"products":"a557292fe5814ea2b15c6ef4bd73ed83"}
  */
 exports.orderProducts = (req, res, next) => {
   if (!req.body.contact ||
