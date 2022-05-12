@@ -7,7 +7,7 @@ function orderId() {
         const orderId = urlParams.get('orderId')
         return (orderId);
     }
-
+//afficher le numero de commande sur la page
 function set_html(){
     const order = orderId();
     console.log(orderId);

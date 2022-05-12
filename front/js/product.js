@@ -1,14 +1,16 @@
+//obtenir l'id du produit depuis l'url
+
 function GetId() {
-//    console.log(window.location.search);
- //   console.log(location.search);
- //   console.log(location);
+
     const url = window.location.search;
     const urlParams = new URLSearchParams(url);
 
     const id = urlParams.get('id')
-  //  console.log(id);
+
     return (id);
 }
+
+//créer le html qui envoyé dans la page
 
 function display_html(data){
     
@@ -28,26 +30,32 @@ function display_html(data){
 
     const len = data.colors.length;
     let html = "";
+
     for (let i = 0; i < len; i++) {
         html += `<option value = ${data.colors[i]} > ${data.colors[i]} </option>`;
     };
+
     colors.innerHTML += html;
 }
 
+//récuperer le produit par son id
+
 function getProduct() {
     let id = GetId();
-    console.log(id);
     fetch(`http://localhost:3000/api/products/${id}`)
         .then((response) => {
             if (response.status == 404) {
-                console.log('404');
+
+                //en cas d'id inexistants on avertit le client
+
                 let name = document.getElementById("title");
                 name.innerText = `Ce produit n'éxiste pas`;
 
             } else if (response.ok) {
                 response.json().then((data) => {
-                    console.log(data);
-            //        console.log(response);
+
+                    //envoyer le html dans le dom
+
                     display_html(data);
                 })
             }
@@ -58,21 +66,21 @@ function getProduct() {
         });
 }
 
+//fonction pour obtenir le local storage
 
 function get_local_storage(){
     let local_storage = (localStorage.getItem("panier"));
     local_storage = JSON.parse(local_storage);
-   // console.log("la taille du local storage est:"+local_storage.length);
-    //console.log("le contenu du local storage est:"+local_storage[1].color);
-    //console.log("le contenu du local storage est:"+local_storage[0].id[0]);
-    //console.log(local_storage.color);
+
 return (local_storage);
 }
 
+// vérifier que le produit ajouter est ou non deja dans le local storage
+// et empecher sa quantité de dépasser 100
+
 function check_color(local_storage, add_cart) {
-    let y = 0;//debugger;
-    console.log(typeof local_storage[y].quantity);
-    console.log(typeof add_cart[0].quantity);
+    let y = 0;
+
     while (y < local_storage.length){
             if (local_storage[y].id == add_cart[0].id && local_storage[y].color == add_cart[0].color ){
                 const ls = parseInt(local_storage[y].quantity);
@@ -95,20 +103,11 @@ function add_cart() {
     const color = document.getElementById("colors");
     const id = GetId();
     let local_storage = get_local_storage();
-   // JSON.parse(local_storage);
-   // let basket = [{ id: GetId(), quantity: quantity.value, color: color.value}];
-
-    add.addEventListener('click', function () {
-       // console.log('ca clique!!!');
-        //console.log(quantity.value);
-        //console.log(color.value);
-        //console.log(basket);
-        //alert("vous devez choisir une couleur et une quantité pour le produit choisi.");
  
-        //1-get local storage dans une variable
-        //2-verifier que lid du produit n'existe pas
-        //2bis-Si il existe aug la quantité
-        //3-save la variable dans le local
+    add.addEventListener('click', function () {
+
+        //vérifier que le client choisi bien toutes les options obligatoires
+
         if (color.value == "" ){
             alert("vous devez choisir une couleur pour le produit choisi.");
         }
@@ -119,10 +118,16 @@ function add_cart() {
             alert("vous devez choisir une quantité pour le produit chosi.");
         }
         else{
+
+            // ajouter au panier via le local storage
+
             let add_cart = [];
         add_cart.push ({ id: GetId(), quantity: quantity.value, color: color.value});
         console.log(add_cart);
         let check_ls = (element) => element.id == id;
+
+        //vérifier le contenu du local storage
+        
        if(local_storage == null){
         local_storage = add_cart;
        }
