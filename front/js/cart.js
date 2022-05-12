@@ -6,14 +6,14 @@ function get_local_storage() {
   return (local_storage);
 }
 
-function supprimer() {
-  let local_storage = get_local_storage();
+function supprimer(prices) {
   const del = document.getElementsByClassName('deleteItem');
   const cart_items = document.getElementById('cart__items');
   for (let i = 0; i < del.length; i++) {
     del[i].addEventListener('click', function (element) {
+      let local_storage = get_local_storage();
       const items = document.getElementsByTagName('article');
-      let this_item = element.srcElement;
+      let this_item = element.target;
       let article = this_item.parentNode.parentNode.parentNode.parentNode;
       console.log(article);
       let product = { id: article.dataset.id, color: article.dataset.color };
@@ -30,16 +30,17 @@ function supprimer() {
       console.log(items);
       //location.reload()  
       cart_items.removeChild(article);
+      total(prices);
     });
   }
 }
 
-function input_change(price) {
+function input_change(prices){
   const quantity = document.getElementsByClassName("itemQuantity");
-  let local_storage = get_local_storage();
   const cart_items = document.getElementById('cart__items');
   for (let i = 0; i < quantity.length; i++) {
-    quantity[i].addEventListener('change', function (element) {
+    quantity[i].addEventListener('change', function (element){
+      let local_storage = get_local_storage();
       let this_item = element.target;
       console.log(this_item);
       let article = this_item.parentNode.parentNode.parentNode.parentNode;
@@ -47,6 +48,17 @@ function input_change(price) {
       let product = { id: article.dataset.id, color: article.dataset.color };
       let check_ls = (element) => element.id == product.id && element.color == product.color;
       let y = local_storage.findIndex(check_ls)
+      let check_price = (element) => element.id == local_storage[y].id;
+      let c = prices.findIndex(check_price);
+      let price = prices[c].price;
+      console.log(c);
+      console.log(price);
+      const item_content = article.lastChild;
+      const item_description = item_content.firstChild;
+      const price_description = item_description.lastChild;
+      price_description.innerText = this_item.value * price;
+      console.log(item_description);
+      
       if (this_item.value == 0) {
         local_storage.splice(y, 1);
         cart_items.removeChild(article);
@@ -59,6 +71,7 @@ function input_change(price) {
         local_storage[y].quantity = this_item.value;
       }
       localStorage.setItem("panier", JSON.stringify(local_storage));
+    total(prices);
     });
   }
   return;
@@ -104,9 +117,16 @@ function display_html(data, local_storage) {
   content_settings.appendChild(settings_delete);
 }
 
-function total(len, price) {
+function total(prices) {
+  let local_storage = get_local_storage();
+  let len = local_storage.length;
+  console.log(len);
+  let price = 0;
+  prices.forEach(element => {
+   price += element.price;    
+  });
   let total_Quantity = document.getElementById('totalQuantity');
-  if (len == 1) {
+  if (len <= 1) {
     let html = `<p>Total (<span id = "totalQuantity">${len}</span> article) : 
     <span id="totalPrice"><!-- 84,00 --></span> €</p>`
     let insert = document.getElementsByClassName('cart__price');
@@ -119,9 +139,7 @@ function total(len, price) {
 
 async function get_Price() {
   let local_storage = get_local_storage();
-  //let id = local_storage.id;
-  // console.log('test'+id);
-  let prices = [];
+   let prices = [];
   let len = local_storage.length;
   for (let i = 0; i < local_storage.length; i++) { console.log(local_storage[i].id) };
   for (let i = 0; i < local_storage.length; i++) {
@@ -133,10 +151,7 @@ async function get_Price() {
         console.log('404');
       } else if (response.ok) {
         var data = await response.json()//.then((data) => {
-        //console.log(local_storage[i].id);
-        //console.log(local_storage.length);
         prices.push({id:local_storage[i].id, price:data.price});
-        //total(len, price);
         display_html(data, local_storage[i], len, data.price);
         //})
       }
@@ -275,10 +290,11 @@ function post() {
 }
 
 async function main() {
-  let price = await get_Price();
-  console.log(price);
-  supprimer();
-  input_change();
+  let prices = await get_Price();
+  console.log(prices);
+  total(prices);
+  supprimer(prices);
+  input_change(prices);
   set_errorHTML();
   param_order();
   post();
